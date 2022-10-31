@@ -12,17 +12,29 @@
    :height 20
    :initial-x 4
    :initial-y 0
-   :block-size 24
+   :block-size 16
    :block-border 2
    :color-full "#bfcd99"
    :color-empty "#000000"
    :color-ghost "#373837"})
 
-(defn draw-raw-square [tools [x y] [height width inner-color] [border-width border-color]]
+(defn draw-raw-square [tools [x y] [block-width block-color] [border-width border-color]]
   (set! (.-strokeStyle (:brush tools)) border-color)
-  (set! (.-fillStyle (:brush tools)) inner-color)
-  (. (:brush tools) fillRect (+ x border-width) (+ y border-width) width height)
-  (. (:brush tools) strokeRect x y (+ width) (+ height))
+  (set! (.-fillStyle (:brush tools)) block-color)
+  (.
+   (:brush tools)
+   fillRect
+   (+ (* x (+ block-width border-width border-width)) (* 2 border-width))
+   (+ (* y (+ block-width border-width border-width)) (* 2 border-width))
+   (- block-width (* 2 border-width))
+   (- block-width (* 2 border-width)))
+  (.
+   (:brush tools)
+   strokeRect
+   (+ (* x (+ block-width border-width border-width)) border-width)
+   (+ (* y (+ block-width border-width border-width)) border-width)
+   block-width
+   block-width)
   tools)
 
 (defn draw-square
@@ -36,21 +48,23 @@
     color-ghost :color-ghost}]
   (draw-raw-square
    tools
-   [(* x (+ block-size block-border))
-    (* y (+ block-size block-border))]
+   [x y]
    [block-size
-    block-size
     (case type
       :full color-full
       :empty color-empty
       :ghost color-ghost)]
-   [block-border color-ghost])
+   [block-border
+    (case type
+      :full color-full
+      :empty color-empty
+      :ghost color-ghost)])
   tools)
-
 
 (comment
   ;; Run `draw-square`
-  (draw-square (get-tools) 0 0 :full (get-config)))
+  (draw-square (get-tools) 0 0 :full (get-config))
+  (draw-square (get-tools) 0 0 :ghost (get-config)))
 
 (defn draw-block [tools  x y type block config]
   (map

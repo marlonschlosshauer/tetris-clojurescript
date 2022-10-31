@@ -108,4 +108,10 @@
    [1 0 0 0]
    [1 0 0 0]])
 
+(def i-block-rotated
+  [[1 1 1 1]
+   [0 0 0 0]
+   [0 0 0 0]
+   [0 0 0 0]])
+
 (def blocks [z-block s-block t-block o-block l-block j-block i-block])

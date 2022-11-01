@@ -1,22 +1,18 @@
 (ns ^:figwheel-hooks tetris.core
-  (:require
-   [goog.dom :as gdom]))
+  (:require [goog.dom :as gdom]
+            [tetris.inputs :as input]))
 
-(println "This text is printed from src/tetris/core.cljs. Go ahead and edit it and see reloading in action.")
-
-(defn multiply [a b] (* a b))
-
-;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "Hello world!"}))
 
-(defn get-app-element []
-  (gdom/getElement "app"))
+(defn capture-input [& cb]
+  (. js/window
+     addEventListener
+     "keydown"
+     (if (nil? cb)
+       (fn [e] (input/on-input (.-key e)))
+       (fn [e] (cb (input/on-input (.-key e)))))))
 
-
-
-;; specify reload hook with ^:after-load metadata
-(defn ^:after-load on-reload []
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+;; How to run it on start though?
+(defn ^:after-load start []
+  (println (. js/Date now))
+  (capture-input println))

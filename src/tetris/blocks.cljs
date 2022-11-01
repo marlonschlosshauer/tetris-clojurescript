@@ -40,5 +40,4 @@
   ;; Run `rotate-block`
   (rotate-block tetromino/t-block)
   ;; Run `rotate-block` twice
-  (rotate-block (rotate-block tetromino/i-block))
-  )
+  (rotate-block (rotate-block tetromino/i-block)))

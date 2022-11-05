@@ -13,7 +13,10 @@
 (defn get-clear-playfield [x y]
   (repeat y (repeat x 0)))
 
-(defn can-move? [playfield block x y]
+(defn can-move? [{playfield :playfield
+                  block :block
+                  x :x
+                  y :y}]
   ;; from [][] -> {:x :y :value}[]
   (let [cells (for [[i row] (map-indexed list block)
                     [j cell] (map-indexed list row)]
@@ -38,39 +41,44 @@
       (filter (fn [cell] (> (:value cell) 0)) cells)))))
 
 (comment
-  (let [x 1
-        y 1
-        block [[1 0 0 0]
-               [1 0 0 0]
-               [1 0 0 0]
-               [1 0 0 0]]
-        playfield (get-clear-playfield 11 20)]
-    (can-move? playfield block x y)))
+  ;; Run `can-move?`
+  (can-move?
+   {:x 1
+    :y 1
+    :block [[1 0 0 0]
+            [1 0 0 0]
+            [1 0 0 0]
+            [1 0 0 0]]
+    :playfield (get-clear-playfield 11 20)}))
 
 
 ;; get block history
-(defn tick [playfield action block x y]
-  (case action
-    :rotate (let [new-block (blocks/rotate-block block)]
-              (if (can-move? playfield new-block x y)
-                [playfield new-block x y]
-                ;; TODO: Try to shimmy piece
-                [playfield block x y]))
-    :left (if (can-move? playfield block (dec x) y)
-            [playfield block (dec x) y]
-            [playfield block x y])
-    :right (if (can-move? playfield block x (inc y))
-             [playfield block x (inc y)]
-             [playfield block x y])
-    :down (if (can-move? playfield block x (inc y))
-            [playfield block x (inc y)]
-            [playfield block x y])
-    ;; default case: do nothing
-    [playfield block x y]
-    ;; TODO:
-    ;; :drop
-    ;; :hold
-    ;; :tick  (check if lines are completed & generate new block)
-    )
-  )
+(defn tick [data]
+  ;; TODO: check if lines are completed
+  ;; TODO: generate new block (on drop)
+  ;; TODO: also get score (?)
+  ;; TODO:
+  ;; :drop
+  ;; :hold
+  ;; :tick
+  (let [new-data
+        (case (:action data)
+          :rotate {:block (blocks/rotate-block (:block data))}
+          :left {:x (dec (:x data))}
+          :right {:x (inc (:x data))}
+          :down {:y (inc (:y data))}
+          data)]
+    (merge data new-data)))
 
+
+(comment
+  ;; Run `tick`
+  (tick
+   {:action :down
+    :x 1
+    :y 1
+    :block [[1 0 0 0]
+            [1 0 0 0]
+            [1 0 0 0]
+            [1 0 0 0]]
+    :playfield (get-clear-playfield 11 20)}))

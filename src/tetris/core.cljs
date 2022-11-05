@@ -9,12 +9,13 @@
 (def
   app-state
   (atom
-   {:playfield (util/get-clear-playfield 11 20)
-    :block  tetromino/l-block
-    :x 2
-    :y 0
-    :tools (visuals/get-tools)
-    :config (visuals/get-config)}))
+   (visuals/update-playground-size
+    {:playfield (util/get-clear-playfield 11 20)
+     :block  tetromino/l-block
+     :x 2
+     :y 0
+     :tools (visuals/get-tools)
+     :config (visuals/get-config)})))
 
 (defn capture-input [cb]
   (. js/window
@@ -22,14 +23,20 @@
      "keydown"
      (fn [e] (cb (input/on-input (.-key e))))))
 
+(defn capture-resize [cb]
+  (. js/window
+     addEventListener
+     "resize"
+     (fn [] (cb))))
+
 ;; How to run it on start though?
 (defn ^:after-load start []
   (println (. js/Date now))
+  (capture-resize
+   (fn []
+     (visuals/draw-state
+      (swap! app-state merge (visuals/update-playground-size @app-state)))))
   (capture-input
    (fn [action]
      (visuals/draw-state
       (swap! app-state merge (game/tick (assoc @app-state :action action)))))))
-
-(comment
-  (visuals/draw-state @app-state))
-

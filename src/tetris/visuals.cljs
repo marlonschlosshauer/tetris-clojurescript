@@ -68,7 +68,7 @@
     y :y
     block :block, :as all}]
   (doseq [[i row] (map-indexed list block)
-        [j cell] (map-indexed list row)]
+          [j cell] (map-indexed list row)]
     (draw-block
      (merge
       all
@@ -106,21 +106,23 @@
 
 ;; TODO: Update to use {} instead of []
 (defn update-playground-size
-  [tools
-   {width :width
-    height :height
-    block :block-size
-    border :block-border}]
-  (let [canvas (:canvas tools)
+  [{{canvas :canvas} :tools
+    {width :width
+     height :height
+     block :block-width
+     border :border-width} :config, :as all}]
+  (let [block (Math/floor (/ (* 0.75 (.-innerHeight js/window)) height))
+        border (Math/floor (/ block 8))
         height (* height (+ block (* 2 border)))
         width (* width (+ block (* 2 border)))]
     (set! (.-height canvas) height)
     (set! (.-width canvas) height)
     (set! (.-height (.-style  canvas)) (str height "px"))
     (set! (.-width (.-style  canvas)) (str width "px"))
-    [width height]))
+    (assoc all :config (merge (:config all) {:block-width block :border-width border}))))
 
 (comment
   ;; Run `update-playground-size`
-  (update-playground-size (get-tools) (get-config)))
-
+  (update-playground-size
+   {:tools (get-tools)
+    :config (get-config)}))

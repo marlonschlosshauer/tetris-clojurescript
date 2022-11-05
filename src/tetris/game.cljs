@@ -55,18 +55,15 @@
   ;; TODO: check if lines are completed
   ;; TODO: generate new block (on drop)
   ;; TODO: also get score (?)
-  ;; TODO:
-  ;; :drop
-  ;; :hold
-  ;; :tick
-  (let [new-data
-        (case (:action data)
-          :rotate {:block (blocks/rotate-block (:block data))}
-          :left {:x (dec (:x data))}
-          :right {:x (inc (:x data))}
-          :down {:y (inc (:y data))}
-          data)]
-    (merge data new-data)))
+  ;; TODO: :drop, :hold, :tick
+  (merge
+   data
+   (case (:action data)
+     :rotate {:block (blocks/rotate-block (:block data))}
+     :left {:x (dec (:x data))}
+     :right {:x (inc (:x data))}
+     :down {:y (inc (:y data))}
+     data)))
 
 
 (comment

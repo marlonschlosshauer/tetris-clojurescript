@@ -1,5 +1,6 @@
 (ns tetris.game
-  (:require [tetris.blocks :as blocks]))
+  (:require [tetris.blocks :as blocks]
+            [tetris.util :as util]))
 
 (def actions
   [:left
@@ -9,9 +10,6 @@
    :drop
    :hold
    :tick])
-
-(defn get-clear-playfield [x y]
-  (repeat y (repeat x 0)))
 
 (defn can-move? [{playfield :playfield
                   block :block
@@ -49,7 +47,7 @@
             [1 0 0 0]
             [1 0 0 0]
             [1 0 0 0]]
-    :playfield (get-clear-playfield 11 20)}))
+    :playfield (util/get-clear-playfield 11 20)}))
 
 
 ;; get block history
@@ -81,4 +79,4 @@
             [1 0 0 0]
             [1 0 0 0]
             [1 0 0 0]]
-    :playfield (get-clear-playfield 11 20)}))
+    :playfield (util/get-clear-playfield 11 20)}))

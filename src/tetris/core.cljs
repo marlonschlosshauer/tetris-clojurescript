@@ -2,23 +2,19 @@
   (:require [goog.dom :as gdom]
             [tetris.inputs :as input]
             [tetris.tetromino :as tetromino]
-            [tetris.game :as game]))
+            [tetris.util :as util]
+            [tetris.game :as game]
+            [tetris.visuals :as visuals]))
 
-(defonce
+(def
   app-state
   (atom
-   {:playfield
-    [[0 0 0 0 0 0 0 0]
-     [0 0 0 0 0 0 0 0]
-     [0 0 0 0 0 0 0 0]
-     [0 0 0 0 0 0 0 0]
-     [0 0 0 0 0 0 0 0]
-     [0 0 0 0 0 0 0 0]
-     [0 0 0 0 0 0 0 0]
-     [0 0 0 0 0 0 0 0]]
+   {:playfield (util/get-clear-playfield 11 20)
     :block  tetromino/l-block
     :x 2
-    :y 0}))
+    :y 0
+    :tools (visuals/get-tools)
+    :config (visuals/get-config)}))
 
 (defn capture-input [cb]
   (. js/window
@@ -31,4 +27,9 @@
   (println (. js/Date now))
   (capture-input
    (fn [action]
-     (swap! app-state merge (game/tick (assoc @app-state :action action))))))
+     (visuals/draw-state
+      (swap! app-state merge (game/tick (assoc @app-state :action action)))))))
+
+(comment
+  (visuals/draw-state @app-state))
+
